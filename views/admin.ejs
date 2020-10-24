@@ -3,13 +3,36 @@
 <body>
   <h2>Employee List</h2>
   <table>
+    <tr>
+      <th>Employee Id</th>
+      <th>Name</th>
+      <th>Job Type</th>
+      <th>Gender</th>
+      <th>Contact</th>
+      <th>Email</th>
+      <th>Address</th>
+    </tr>
+
+    <% employees.forEach(employee => { %>
+      <tr>
+        <td> <%= employee.emp_id %> </td>
+        <td> <%= employee.fname + " " + employee.mname+" " +employee.lname%> </td>
+        <td> <%= employee.job_type %> </td>
+        <td> <%= employee.gender %> </td>
+        <td> <%= employee.contact_no %> </td>
+        <td> <%= employee.email %> </td>
+        <td> <%= employee.house_no + ", " + employee.city+", " +employee.state+', '+employee.country%> </td>
+      </tr>
     
-    <tr></tr>
+    <%}); %> 
+    
+    
   </table>
   
  
 
   <form action="" method="post">
+    <h1>Add New Employee</h1>
     <h2>Name: </h2>
     <label for="fname"> First Name: </label>
     <input type="text" name="fname">
@@ -30,15 +53,14 @@
     <br>
     <hr>
 
-
     <h2>Details: </h2>
-    <label for="jobtype"> Job TYpe </label>
+    <label for="jobtype"> Job Type </label>
     <input type="text" name="jobtype">
     <br>
     <label for="gender"> Gender </label>
     <select name="gender" id="">
-      <option value="m">M</option>
-      <option value="f">F</option>
+      <option value="M">M</option>
+      <option value="F">F</option>
       <option value="T">T</option>
     </select>
     <br>
@@ -59,8 +81,7 @@
     <label for="country">Country</label>
     <input type="text" name="country" id=""> <br>
 
-
-    <input type="submit" value="Submit">
+    <input type="submit" value="Add Employee">
   </form>
   
 

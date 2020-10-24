@@ -1,0 +1,30 @@
+<% include ('header') %>
+
+<body>
+  <table>
+    <tr>
+      <th>Customer id</th>
+      <th>Name</th>
+      <th>gender</th>
+      <th>DOB </th>
+      <th>contact</th>
+      <th>email</th>
+      <th>Address</th>
+    </tr>
+
+    <% customers.forEach(customer => { %>
+    <tr>
+      <td> <%= customer.cust_id %> </td>
+      <td> <%= customer.fname + " " + customer.mname+" " +customer.lname%> </td>
+      <td> <%= customer.gender %> </td>
+      <td> <%= JSON.stringify(customer.DOB).slice(1,11) %> </td>
+      <td> <%= customer.contact_no %> </td>
+      <td> <%= customer.email %> </td>
+      <td> <%= customer.house_no + ", " + customer.city+", " +customer.state+', '+customer.country%> </td>
+    </tr>
+
+
+    <%}); %>
+
+  </table>
+</body>
