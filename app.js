@@ -90,6 +90,7 @@ app.get('/admin', (req, res)=>{
     //console.log(result);
   })
 })
+
 //ADD NEW EMPLOYEE FORM
 app.post("/admin", (req, res) => {
 	let emp = {
@@ -130,7 +131,6 @@ app.post("/admin", (req, res) => {
   res.redirect('/admin')
 });
 
-
 app.get("/customer", (req, res) => {
 	let customerQuery =
 		"select * from customer c inner join customer_details cd on c.cust_id = cd.cust_id";
@@ -140,6 +140,7 @@ app.get("/customer", (req, res) => {
 		console.log(result);
 	});
 });
+
 
 
 app.listen(3000, ()=>{

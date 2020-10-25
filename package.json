@@ -1,0 +1,26 @@
+{
+  "name": "mysql-dbms",
+  "version": "1.0.0",
+  "description": "Node mysql backend for DBMS J Component",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parth-jaiswal/node-mysql-dbms.git"
+  },
+  "author": "Parth",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/parth-jaiswal/node-mysql-dbms/issues"
+  },
+  "homepage": "https://github.com/parth-jaiswal/node-mysql-dbms#readme"
+}
