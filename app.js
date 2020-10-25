@@ -131,6 +131,7 @@ app.post("/admin", (req, res) => {
   res.redirect('/admin')
 });
 
+//DISPLAYS CUSTOMER DETAILS TO ADMIN
 app.get("/customer", (req, res) => {
 	let customerQuery =
 		"select * from customer c inner join customer_details cd on c.cust_id = cd.cust_id";
@@ -141,7 +142,21 @@ app.get("/customer", (req, res) => {
 	});
 });
 
+//DISPLAYS INVOICE
+app.get("/invoice", (req, res)=>{
+	let invoiceQuery = `select * from invoice`
+	con.query(invoiceQuery, (error, result, fields)=>{
+		if(error) throw error;
+		res.render('invoice.ejs', {invoice: result});	
+		console.log(result);
+	})
 
+
+})
+
+app.post('/invoice', (req, res)=> {
+	
+})
 
 app.listen(3000, ()=>{
   console.log('Server started on port 3000');
