@@ -44,7 +44,7 @@ app.post("/", (req, res) => {
 		idno: req.body.idno,
 		checkin: req.body.checkin,
 		checkout: req.body.checkout,
-		roomType: req.body.roomType,
+		roomtype: req.body.roomtype,
 		dob: req.body.dob,
 		gender: req.body.gender,
 		contact: req.body.contact,
@@ -75,15 +75,20 @@ app.post("/", (req, res) => {
 		if (error) throw error;
 		console.log(`${cust.fname} details entered`);
   });
-  
-    res.redirect("/");
+	
+	//insert into reservation
+
+
+	//let reserve = `insert into reservation values 'B1`
+	
+  res.redirect("/");
 
 })
 
 //ADMIN PAGE
 //DISPLAYS EMPLOYEES DETAILS
 app.get('/admin', (req, res)=>{
-  let employeeQuery = 'select * from employee e inner join employee_details ed on e.emp_id = ed.emp_id';
+  let employeeQuery = 'select * from employee e inner join employee_details ed on e.emp_id = ed.emp_id group by e.emp_id';
   con.query(employeeQuery, (error, result, fields) => {
     if (error) throw error;
     res.render('admin', {employees: result} );
@@ -115,14 +120,14 @@ app.post("/admin", (req, res) => {
 	}
 	console.log(emp);
   //MYSQL QUERY ADD EMPLOYEE
-	let insertEmployee = `insert into employee values (10008, '${emp.fname}', "${emp.mname}", "${emp.lname}", '${emp.jobtype}', '${emp.gender}')`;
+	let insertEmployee = `insert into employee values (10009, '${emp.fname}', "${emp.mname}", "${emp.lname}", '${emp.jobtype}', '${emp.gender}')`;
 	con.query(insertEmployee, (error, result, fields) => {
 		if (error) throw error;
 		//console.log(result);
 		console.log(`${emp.fname} inserted successfully`);
 	});
 
-	let insertEmpDetails = `insert into employee_details values (10008, '${emp.idtype}', "${emp.idno}", "${emp.contact}", '${emp.email}', '${emp.house}', '${emp.city}', '${emp.state}', '${emp.country}')`;
+	let insertEmpDetails = `insert into employee_details values (10009, '${emp.idtype}', "${emp.idno}", "${emp.contact}", '${emp.email}', '${emp.house}', '${emp.city}', '${emp.state}', '${emp.country}')`;
 	con.query(insertEmpDetails, (error, result, fields) => {
 		if (error) throw error;
 		console.log(`${emp.fname} details entered`);
@@ -138,7 +143,7 @@ app.get("/customer", (req, res) => {
 	con.query(customerQuery, (error, result, fields) => {
 		if (error) throw error;
 		res.render("customer", { customers: result });
-		console.log(result);
+		//console.log(result);
 	});
 });
 
@@ -150,11 +155,35 @@ app.get("/invoice", (req, res)=>{
 		res.render('invoice.ejs', {invoice: result});	
 		console.log(result);
 	})
-
-
 })
 
 app.post('/invoice', (req, res)=> {
+	
+})
+
+app.get('/availability', (req, res)=>{
+	res.render("availability", {availability: ""})
+});
+
+app.post("/availability", (req, res)=>{
+	let from = req.body.from;
+	let to = req.body.to;
+	let roomtype = req.body.roomtype;
+	let availabilityQuery = `select * from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = '${roomtype}' and r.to_date between '${from}' and '${to}' or (r.from_date between '${from}' and '${to}')`;
+  
+	con.query(availabilityQuery, (error, result, fields)=>{
+		if(error) throw error;
+		console.log(result);
+		console.log(typeof(result));
+		//console.log();
+
+		if (result.length === 0) {
+			res.render("availability", { availability: "Available" });
+		} else {
+			res.render("availability", { availability: "All Rooms Booked" });
+		}
+		
+	})
 	
 })
 
