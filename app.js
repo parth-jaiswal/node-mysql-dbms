@@ -77,9 +77,19 @@ app.post("/", (req, res) => {
   });
 	
 	//insert into reservation
+// 	var custid;
+// 	let getCustid = `select MAX(cust_id) as custid from customer`;
+// 	con.query(getCustid, (error, result, fields) => {
+// 		if (error) throw error;
+// 		custid = result[0].custid;
+// 		let reserve = `insert into reservation values('B${custid}', ${custid}, ${}, '${cust.checkin}', '${cust.checkout}')`;
+// 		con.query(reserve, (error, result, fields) => {
+// 			if (error) throw error;
+// 			console.log(custid, "reserved a room");
+// 		});
+// });
 
-
-	//let reserve = `insert into reservation values 'B1`
+	
 	
   res.redirect("/");
 
@@ -119,15 +129,17 @@ app.post("/admin", (req, res) => {
 		}
 	}
 	console.log(emp);
-  //MYSQL QUERY ADD EMPLOYEE
-	let insertEmployee = `insert into employee values (10009, '${emp.fname}', "${emp.mname}", "${emp.lname}", '${emp.jobtype}', '${emp.gender}')`;
+	
+	//MYSQL QUERY ADD EMPLOYEE
+	let insertEmployee = `insert into employee (fname, mname, lname, job_type, gender) values ('${emp.fname}', "${emp.mname}", "${emp.lname}", '${emp.jobtype}', '${emp.gender}')`;
 	con.query(insertEmployee, (error, result, fields) => {
 		if (error) throw error;
 		//console.log(result);
 		console.log(`${emp.fname} inserted successfully`);
 	});
 
-	let insertEmpDetails = `insert into employee_details values (10009, '${emp.idtype}', "${emp.idno}", "${emp.contact}", '${emp.email}', '${emp.house}', '${emp.city}', '${emp.state}', '${emp.country}')`;
+	//ADD EMPLOYEE DETAILS
+	let insertEmpDetails = `insert into employee_details (id_proof, id_no, contact_no, email, house_no, city, state, country) values ('${emp.idtype}', "${emp.idno}", "${emp.contact}", '${emp.email}', '${emp.house}', '${emp.city}', '${emp.state}', '${emp.country}')`;
 	con.query(insertEmpDetails, (error, result, fields) => {
 		if (error) throw error;
 		console.log(`${emp.fname} details entered`);
@@ -152,19 +164,32 @@ app.get("/invoice", (req, res)=>{
 	let invoiceQuery = `select * from invoice`
 	con.query(invoiceQuery, (error, result, fields)=>{
 		if(error) throw error;
-		res.render('invoice.ejs', {invoice: result});	
-		console.log(result);
+		res.render('invoice.ejs', {invoices: result});	
+		//console.log(result);
 	})
 })
 
+//UPDATE INVOICE VALUES
 app.post('/invoice', (req, res)=> {
-	
+	let custid = req.body.custid;
+	let food_charge	 = req.body.food_charge;
+	let damage_charge = req.body.damage_charge;
+	let booking_no = req.body.booking_no;
+	let payment = req.body.payment
+	let updateInvoice = `update invoice set food_charge = ${food_charge}, damage_charge = ${damage_charge}, status = '${payment}' where (cust_id = ${custid} and booking_no ='${booking_no}')`;
+	con.query(updateInvoice, (err, result, fields) =>{
+		if(err) throw err;
+		console.log("updated");
+	})
+	res.redirect('/invoice');								
 })
 
+//AVAILABILITY PAGE
 app.get('/availability', (req, res)=>{
 	res.render("availability", {availability: ""})
 });
 
+//CHECK AVAILABILITY PAGE
 app.post("/availability", (req, res)=>{
 	let from = req.body.from;
 	let to = req.body.to;
@@ -190,3 +215,5 @@ app.post("/availability", (req, res)=>{
 app.listen(3000, ()=>{
   console.log('Server started on port 3000');
 });
+
+

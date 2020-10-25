@@ -1,13 +1,52 @@
-<% include ('header') %>
+<%- include ('header') %>
 
 <body>
   <h1>INVOICE:</h1>
-  <%= invoice %> 
   <table>
-    <td></td>
+    <tr>
+      <th>Invoice No</th>
+      <th>Booking No</th>
+      <th>Cust ID</th>
+      <th>Room Charge</th>
+      <th>Food Charge</th>
+      <th>Damage Charge</th>
+      <th>Status</th>
+    </tr>
+
+    <% invoices.forEach(invoice => { %>
+    <tr>
+      <td> <%= invoice.invoice_no %> </td>
+      <td> <%= invoice.booking_no%> </td>
+      <td> <%= invoice.cust_id %> </td>
+      <td> <%= invoice.room_charge %> </td>
+      <td> <%= invoice.food_charge %> </td>
+      <td> <%= invoice.damage_charge %> </td>
+      <td> <%= invoice.status %> </td>
+    </tr>
+
+
+    <%}); %>
 
   </table>
+
   
+  <form action="" method="post">
+    <h3>Update Invoice Status</h3>
+    <label for="custid">Cust ID:</label>
+    <input type="number" name="custid" id=""><br>
+    <label for="booking_no">Booking Number</label>
+    <input type="text" name="booking_no" id=""><br>
+    <label for="food_charge">Food Charge</label>
+    <input type="number" name="food_charge" id="">
+    <label for="damage_charge">Damage Charge</label>
+    <input type="number" name="damage_charge" id="">
+    <label for="payment">Payment Status</label>
+    <select name="payment" id="">
+      <option value="PAID">Paid</option>
+      <option value="UNPAID">Unpaid</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
 </body>
 
 </html>
