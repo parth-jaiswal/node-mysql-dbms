@@ -14,7 +14,7 @@ app.set("view engine", "ejs");
 //create connection
 var con = mysql.createConnection({
 	host: "localhost",
-	user: "root",
+	user: "parthdb",
   password: "",
   database: "hotel"
 });
@@ -58,7 +58,7 @@ app.post("/", (req, res) => {
 	
 	//MYSQL QUERY
 	//insert into customers
-	let insertCustomer = `insert into customer values (10009, '${cust.fname}', "${cust.mname}", "${cust.lname}", '${cust.dob}', '${cust.gender}')`;
+	let insertCustomer = `insert into customer (fname, mname, lname, DOB, gender) values ('${cust.fname}', "${cust.mname}", "${cust.lname}", '${cust.dob}', '${cust.gender}')`;
 	con.query(insertCustomer, (error, result, fields) => {
 		if (error) throw error;
 		//console.log(result);
@@ -66,27 +66,28 @@ app.post("/", (req, res) => {
 	});
 
 	//insert into customers
-	let insertCustDetails = `insert into customer_details values (10009, '${cust.idtype}', "${cust.idno}", "${cust.contact}", '${cust.email}', '${cust.house}', '${cust.city}', '${cust.state}', '${cust.country}')`;
+	let insertCustDetails = `insert into customer_details (id_proof, id_no, contact_no, email, house_no, city, state, country) values ('${cust.idtype}', "${cust.idno}", "${cust.contact}", '${cust.email}', '${cust.house}', '${cust.city}', '${cust.state}', '${cust.country}')`;
 	con.query(insertCustDetails, (error, result, fields) => {
 		if (error) throw error;
 		console.log(`${cust.fname} details entered`);
   });
 	
-	//insert into reservation
+	
 	var custid;
 	let getCustid = `select MAX(cust_id) as custid from customer`;
 	con.query(getCustid, (error, result, fields) => {
 		if (error) throw error;
 		custid = result[0].custid;
 
-		let minRoom = `select min(r.room_no) as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = '${cust.roomtype}' and not (r.to_date between '${cust.checkin}' and '${cust.checkout}' or (r.from_date between '${cust.checkin}' and '${cust.checkout}'))`
-    con.query(minRoom, (error, result1, fields) => {
+		//INSERT INTO RESERVATION
+		let minRoom = `select min(r.room_no) as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = '${cust.roomtype}' and not (r.to_date between '${cust.checkin}' and '${cust.checkout}' or (r.from_date between '${cust.checkin}' and '${cust.checkout}'))`;
+		con.query(minRoom, (error, result1, fields) => {
 			if (error) throw error;
-			if(result1[0].rno === null){
+			if (result1[0].rno === null) {
 				let que = `select min(room_no) as minrno from room where room_type = '${cust.roomtype}'`;
 				console.log(que);
-				con.query(que, (err, result2, fields)=> {
-					if(err) throw err;
+				con.query(que, (err, result2, fields) => {
+					if (err) throw err;
 					console.log(cust.roomtype);
 					console.log(result2[0].minrno);
 					let reserve = `insert into reservation values('B${custid}', ${custid}, ${result2[0].minrno}, '${cust.checkin}', '${cust.checkout}')`;
@@ -94,18 +95,37 @@ app.post("/", (req, res) => {
 						if (error) throw error;
 						console.log(custid, "reserved a room");
 					});
-				})
-			}	else {
-				console.log(cust.roomtype);
-				console.log(result1[0].rno);
+				});
+			} else {
+				// console.log(cust.roomtype);
+				// console.log(result1[0].rno);
 				let reserve = `insert into reservation values('B${custid}', ${custid}, ${result1[0].rno}, '${cust.checkin}', '${cust.checkout}')`;
 				con.query(reserve, (error, result, fields) => {
 					if (error) throw error;
 					console.log(custid, "reserved a room");
 				});
 			}
-		})
+
+			//INSERT INTO INVOICE
+			let roomPrice = `select r.booking_no, (datediff(r.to_date, r.from_date) * x.price) as cost 
+											 	from reservation r inner join (select ro.room_no, price 
+												from room ro inner join pricing p on ro.room_type = p.room_type) x 
+												on x.room_no = r.room_no
+												order by r.booking_no desc limit 1`;
+      con.query(roomPrice, (err, result4, fields) => {
+				if(err) throw err;
+				let cost = result4[0].cost;
+				let insertInvoice = `insert into invoice (invoice_no, booking_no, cust_id, room_charge, status) values ('I${custid}', 'B${custid}', ${custid}, ${cost}, 'UNPAID')`;
+				con.query(insertInvoice, (err, result5, fields)=>{
+					if (err) throw err;
+					console.log(custid, "Invoice Created");
+				})
+			})
+			
+		});
 	});
+
+
 	res.redirect("/");
 })
 
