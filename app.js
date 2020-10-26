@@ -246,9 +246,6 @@ app.post("/availability", (req, res)=>{
 	
 })
 
-app.listen(3000, ()=>{
-  console.log('Server started on port 3000');
-});
 
 app.get('/feedback', (req, res)=>{
 	let feedback = `select c.fname, f.rating, f.comments from feedback f inner join customer c on f.cust_id = c.cust_id	`;
@@ -271,6 +268,9 @@ app.post('/feedback', (req, res)=>{
 	res.redirect('/feedback')
 })
 
+app.listen(3000, ()=>{
+	console.log('Server started on port 3000');
+});
 // let minRoom = `select min(r.room_no)as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = 'PREMIUM' and not (r.to_date between '2020-01-01' and '2020-01-03' or (r.from_date between '2020-01-01' and '2020-01-03'))`
 //     con.query(minRoom, (error, result1, fields) => {
 // 			if (error) throw error;

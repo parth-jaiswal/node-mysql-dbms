@@ -1,17 +1,18 @@
 <%- include ('header') %> 
 
-<body>
+
 <h1>CHECK AVAILABILITY</h1>
   <form action="/availability" method="post">
-    <label for="from"></label><br>
-    <input type="date" name="from" id="">
-    <label for="to"></label><br>
-    <input type="date" name="to" id="">
+    <label for="from">From Date</label>
+    <input type="date" name="from" id=""><br>
+    <label for="to">To Date</label>
+    <input type="date" name="to" id=""><br>
+    <label for="roomtype">Room Type</label>
     <select name="roomtype" id="">
       <option value="NORMAL"> NORMAL </option>
       <option value="PREMIUM"> PREMIUM </option>
       <option value="SUITE"> SUITE </option>
-    </select>
+    </select><br>
     <button type="submit">Check</button>
   </form>
 
