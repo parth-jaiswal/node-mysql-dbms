@@ -14,7 +14,7 @@ app.set("view engine", "ejs");
 //create connection
 var con = mysql.createConnection({
 	host: "localhost",
-	user: "parthdb",
+	user: "root",
   password: "",
   database: "hotel"
 });
@@ -26,13 +26,8 @@ con.connect(function (err) {
 
 // CUSTOMER BOOKS RESERVATION
 app.get("/", (req,res)=>{
-  var sql = "select * from employee_details where emp_id=10001";
-	con.query(sql, (error, result, fields) => {
-		if (error) throw error;
-    //console.log(result);
-    res.render('index', {list: JSON.stringify(result)});
-	});
-})
+  res.render('index');
+	 })
 
 //BOOKING FORM
 app.post("/", (req, res) => {
@@ -59,10 +54,11 @@ app.post("/", (req, res) => {
 			cust[i] = null;
 		}
 	}
-	console.log(cust);
+	//console.log(cust);
+	
 	//MYSQL QUERY
 	//insert into customers
-	let insertCustomer = `insert into customer values (10006, '${cust.fname}', "${cust.mname}", "${cust.lname}", '${cust.dob}', '${cust.gender}')`;
+	let insertCustomer = `insert into customer values (10009, '${cust.fname}', "${cust.mname}", "${cust.lname}", '${cust.dob}', '${cust.gender}')`;
 	con.query(insertCustomer, (error, result, fields) => {
 		if (error) throw error;
 		//console.log(result);
@@ -70,29 +66,47 @@ app.post("/", (req, res) => {
 	});
 
 	//insert into customers
-	let insertCustDetails = `insert into customer_details values (10006, '${cust.idtype}', "${cust.idno}", "${cust.contact}", '${cust.email}', '${cust.house}', '${cust.city}', '${cust.state}', '${cust.country}')`;
+	let insertCustDetails = `insert into customer_details values (10009, '${cust.idtype}', "${cust.idno}", "${cust.contact}", '${cust.email}', '${cust.house}', '${cust.city}', '${cust.state}', '${cust.country}')`;
 	con.query(insertCustDetails, (error, result, fields) => {
 		if (error) throw error;
 		console.log(`${cust.fname} details entered`);
   });
 	
 	//insert into reservation
-// 	var custid;
-// 	let getCustid = `select MAX(cust_id) as custid from customer`;
-// 	con.query(getCustid, (error, result, fields) => {
-// 		if (error) throw error;
-// 		custid = result[0].custid;
-// 		let reserve = `insert into reservation values('B${custid}', ${custid}, ${}, '${cust.checkin}', '${cust.checkout}')`;
-// 		con.query(reserve, (error, result, fields) => {
-// 			if (error) throw error;
-// 			console.log(custid, "reserved a room");
-// 		});
-// });
+	var custid;
+	let getCustid = `select MAX(cust_id) as custid from customer`;
+	con.query(getCustid, (error, result, fields) => {
+		if (error) throw error;
+		custid = result[0].custid;
 
-	
-	
-  res.redirect("/");
-
+		let minRoom = `select min(r.room_no) as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = '${cust.roomtype}' and not (r.to_date between '${cust.checkin}' and '${cust.checkout}' or (r.from_date between '${cust.checkin}' and '${cust.checkout}'))`
+    con.query(minRoom, (error, result1, fields) => {
+			if (error) throw error;
+			if(result1[0].rno === null){
+				let que = `select min(room_no) as minrno from room where room_type = '${cust.roomtype}'`;
+				console.log(que);
+				con.query(que, (err, result2, fields)=> {
+					if(err) throw err;
+					console.log(cust.roomtype);
+					console.log(result2[0].minrno);
+					let reserve = `insert into reservation values('B${custid}', ${custid}, ${result2[0].minrno}, '${cust.checkin}', '${cust.checkout}')`;
+					con.query(reserve, (error, result3, fields) => {
+						if (error) throw error;
+						console.log(custid, "reserved a room");
+					});
+				})
+			}	else {
+				console.log(cust.roomtype);
+				console.log(result1[0].rno);
+				let reserve = `insert into reservation values('B${custid}', ${custid}, ${result1[0].rno}, '${cust.checkin}', '${cust.checkout}')`;
+				con.query(reserve, (error, result, fields) => {
+					if (error) throw error;
+					console.log(custid, "reserved a room");
+				});
+			}
+		})
+	});
+	res.redirect("/");
 })
 
 //ADMIN PAGE
@@ -217,3 +231,13 @@ app.listen(3000, ()=>{
 });
 
 
+// let minRoom = `select min(r.room_no)as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = 'PREMIUM' and not (r.to_date between '2020-01-01' and '2020-01-03' or (r.from_date between '2020-01-01' and '2020-01-03'))`
+//     con.query(minRoom, (error, result1, fields) => {
+// 			if (error) throw error;
+// 			if(result1[0].rno === null){
+// 				con.query(`select min(room_no) as minrno from room where room_type = 'PREMIUM'`, (err, result2, fields)=> {
+// 					console.log(result2[0].minrno);
+// 				})
+// 			} 
+// 		}
+// 	)	;
