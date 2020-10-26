@@ -3,6 +3,7 @@ const express  = require ('express');
 const bodyParser  = require ('body-parser');
 const ejs  = require ('ejs');
 const { constant } = require('async');
+const { response } = require('express');
 
 const app = express();
 
@@ -18,7 +19,6 @@ var con = mysql.createConnection({
   password: "",
   database: "hotel"
 });
-
 con.connect(function (err) {
 	if (err) throw err;
 	console.log("Connected!");
@@ -250,6 +250,26 @@ app.listen(3000, ()=>{
   console.log('Server started on port 3000');
 });
 
+app.get('/feedback', (req, res)=>{
+	let feedback = `select c.fname, f.rating, f.comments from feedback f inner join customer c on f.cust_id = c.cust_id	`;
+	con.query(feedback, (error, result, fields)=> {
+		if(error) throw error;
+		console.log(result);
+		res.render('feedback', {feedback: result});
+	}) 
+})
+
+app.post('/feedback', (req, res)=>{
+	let cust_id = req.body.cust_id;
+	let rating = req.body.rating;
+	let comments = req.body.comments;
+	let insertFeedback = `insert into feedback values (${cust_id}, ${rating}, "${comments}")`;
+	con.query(insertFeedback, (error, result, fields) => {
+		if(error) throw error;
+		console.log('Feedback Inserted');
+	})
+	res.redirect('/feedback')
+})
 
 // let minRoom = `select min(r.room_no)as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = 'PREMIUM' and not (r.to_date between '2020-01-01' and '2020-01-03' or (r.from_date between '2020-01-01' and '2020-01-03'))`
 //     con.query(minRoom, (error, result1, fields) => {

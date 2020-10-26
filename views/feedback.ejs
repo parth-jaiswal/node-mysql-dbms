@@ -1,6 +1,32 @@
 <%- include ('header') %>
 <body>
   <h1>FEEDBACK:</h1>
-  <%= feedback %> 
+
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Ratings</th>
+      <th>Comments</th>
+    </tr>
+
+    <% feedback.forEach(review => { %>
+    <tr>
+      <td> <%= review.fname %> </td>
+      <td> <%= review.rating %> </td>
+      <td> <%= review.comments %> </td>
+    </tr>
+    <%}); %>
+
+  </table>
+
+  <form action="" method="post">
+    <label for="cust_id">Customer ID</label>
+    <input type="number" name="cust_id" id=""><br>
+    <label for="rating">Rating</label>
+    <input type="number" name="rating" id=""><br>
+    <label for="comments">Comments</label>
+    <input type="text" name="comments" id=""><br>
+    <button type="submit">Submit</button>
+  </form>
 </body>
 </html>
