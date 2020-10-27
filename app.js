@@ -50,8 +50,8 @@ app.post("/", (req, res) => {
 		country: req.body.country,
 	};
 	for (i in cust) {
-		if (cust[i] == "") {
-			cust[i] = null;
+		if (cust[i] == "" ) {
+			cust[i] = "\'\'";
 		}
 	}
 	//console.log(cust);
@@ -228,18 +228,17 @@ app.post("/availability", (req, res)=>{
 	let from = req.body.from;
 	let to = req.body.to;
 	let roomtype = req.body.roomtype;
-	let availabilityQuery = `select * from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = '${roomtype}' and r.to_date between '${from}' and '${to}' or (r.from_date between '${from}' and '${to}')`;
+	let availabilityQuery = `select * from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = '${roomtype}' and not (r.to_date between '${from}' and '${to}' or (r.from_date between '${from}' and '${to}'))`;
   
 	con.query(availabilityQuery, (error, result, fields)=>{
 		if(error) throw error;
-		console.log(result);
-		console.log(typeof(result));
-		//console.log();
+		// console.log(result);
+		// console.log(typeof(result));
 
 		if (result.length === 0) {
-			res.render("availability", { availability: "Available" });
-		} else {
 			res.render("availability", { availability: "All Rooms Booked" });
+		} else {
+			res.render("availability", { availability: "Available" });
 		}
 		
 	})
@@ -271,13 +270,4 @@ app.post('/feedback', (req, res)=>{
 app.listen(3000, ()=>{
 	console.log('Server started on port 3000');
 });
-// let minRoom = `select min(r.room_no)as rno from reservation r inner join room ro on r.room_no = ro.room_no where ro.room_type = 'PREMIUM' and not (r.to_date between '2020-01-01' and '2020-01-03' or (r.from_date between '2020-01-01' and '2020-01-03'))`
-//     con.query(minRoom, (error, result1, fields) => {
-// 			if (error) throw error;
-// 			if(result1[0].rno === null){
-// 				con.query(`select min(room_no) as minrno from room where room_type = 'PREMIUM'`, (err, result2, fields)=> {
-// 					console.log(result2[0].minrno);
-// 				})
-// 			} 
-// 		}
-// 	)	;
+
